@@ -1,6 +1,104 @@
 #include "prk_sycl.h"
 #include "prk_util.h"
-#include "stencil_sycl.hpp"
+
+// declare the kernel name used in SYCL parallel_for
+template <typename T> class star2_2d;
+
+template <typename T>
+void star2(sycl::queue & q, const size_t n, sycl::buffer<T, 2> & d_in, sycl::buffer<T, 2> & d_out)
+{
+  q.submit([&](sycl::handler& h) {
+    auto in  = d_in.template get_access<sycl::access::mode::read>(h);
+    auto out = d_out.template get_access<sycl::access::mode::read_write>(h);
+    sycl::id<2> dx1(sycl::range<2> {1,0});
+    sycl::id<2> dy1(sycl::range<2> {0,1});
+    sycl::id<2> dx2(sycl::range<2> {2,0});
+    sycl::id<2> dy2(sycl::range<2> {0,2});
+    h.parallel_for<class star2_2d<T>>(sycl::range<2> {n-4,n-4}, sycl::id<2> {2,2}, [=] (sycl::item<2> it) {
+        sycl::id<2> xy = it.get_id();
+        out[xy] += +in[xy+dx1] * static_cast<T>(0.25)
+                   +in[xy-dx1] * static_cast<T>(-0.25)
+                   +in[xy+dy1] * static_cast<T>(0.25)
+                   +in[xy-dy1] * static_cast<T>(-0.25)
+                   +in[xy+dx2] * static_cast<T>(0.125)
+                   +in[xy-dx2] * static_cast<T>(-0.125)
+                   +in[xy+dy2] * static_cast<T>(0.125)
+                   +in[xy-dy2] * static_cast<T>(-0.125);
+    });
+  });
+}
+
+// declare the kernel name used in SYCL parallel_for
+template <typename T> class star3_2d;
+
+template <typename T>
+void star3(sycl::queue & q, const size_t n, sycl::buffer<T, 2> & d_in, sycl::buffer<T, 2> & d_out)
+{
+  q.submit([&](sycl::handler& h) {
+    auto in  = d_in.template get_access<sycl::access::mode::read>(h);
+    auto out = d_out.template get_access<sycl::access::mode::read_write>(h);
+    sycl::id<2> dx1(sycl::range<2> {1,0});
+    sycl::id<2> dy1(sycl::range<2> {0,1});
+    sycl::id<2> dx2(sycl::range<2> {2,0});
+    sycl::id<2> dy2(sycl::range<2> {0,2});
+    sycl::id<2> dx3(sycl::range<2> {3,0});
+    sycl::id<2> dy3(sycl::range<2> {0,3});
+    h.parallel_for<class star3_2d<T>>(sycl::range<2> {n-6,n-6}, sycl::id<2> {3,3}, [=] (sycl::item<2> it) {
+        sycl::id<2> xy = it.get_id();
+        out[xy] += +in[xy+dx1] * static_cast<T>(0.166666666667)
+                   +in[xy-dx1] * static_cast<T>(-0.166666666667)
+                   +in[xy+dy1] * static_cast<T>(0.166666666667)
+                   +in[xy-dy1] * static_cast<T>(-0.166666666667)
+                   +in[xy+dx2] * static_cast<T>(0.0833333333333)
+                   +in[xy-dx2] * static_cast<T>(-0.0833333333333)
+                   +in[xy+dy2] * static_cast<T>(0.0833333333333)
+                   +in[xy-dy2] * static_cast<T>(-0.0833333333333)
+                   +in[xy+dx3] * static_cast<T>(0.0555555555556)
+                   +in[xy-dx3] * static_cast<T>(-0.0555555555556)
+                   +in[xy+dy3] * static_cast<T>(0.0555555555556)
+                   +in[xy-dy3] * static_cast<T>(-0.0555555555556);
+    });
+  });
+}
+
+// declare the kernel name used in SYCL parallel_for
+template <typename T> class star4_2d;
+
+template <typename T>
+void star4(sycl::queue & q, const size_t n, sycl::buffer<T, 2> & d_in, sycl::buffer<T, 2> & d_out)
+{
+  q.submit([&](sycl::handler& h) {
+    auto in  = d_in.template get_access<sycl::access::mode::read>(h);
+    auto out = d_out.template get_access<sycl::access::mode::read_write>(h);
+    sycl::id<2> dx1(sycl::range<2> {1,0});
+    sycl::id<2> dy1(sycl::range<2> {0,1});
+    sycl::id<2> dx2(sycl::range<2> {2,0});
+    sycl::id<2> dy2(sycl::range<2> {0,2});
+    sycl::id<2> dx3(sycl::range<2> {3,0});
+    sycl::id<2> dy3(sycl::range<2> {0,3});
+    sycl::id<2> dx4(sycl::range<2> {4,0});
+    sycl::id<2> dy4(sycl::range<2> {0,4});
+    h.parallel_for<class star4_2d<T>>(sycl::range<2> {n-8,n-8}, sycl::id<2> {4,4}, [=] (sycl::item<2> it) {
+        sycl::id<2> xy = it.get_id();
+        out[xy] += +in[xy+dx1] * static_cast<T>(0.125)
+                   +in[xy-dx1] * static_cast<T>(-0.125)
+                   +in[xy+dy1] * static_cast<T>(0.125)
+                   +in[xy-dy1] * static_cast<T>(-0.125)
+                   +in[xy+dx2] * static_cast<T>(0.0625)
+                   +in[xy-dx2] * static_cast<T>(-0.0625)
+                   +in[xy+dy2] * static_cast<T>(0.0625)
+                   +in[xy-dy2] * static_cast<T>(-0.0625)
+                   +in[xy+dx3] * static_cast<T>(0.0416666666667)
+                   +in[xy-dx3] * static_cast<T>(-0.0416666666667)
+                   +in[xy+dy3] * static_cast<T>(0.0416666666667)
+                   +in[xy-dy3] * static_cast<T>(-0.0416666666667)
+                   +in[xy+dx4] * static_cast<T>(0.03125)
+                   +in[xy-dx4] * static_cast<T>(-0.03125)
+                   +in[xy+dy4] * static_cast<T>(0.03125)
+                   +in[xy-dy4] * static_cast<T>(-0.03125);
+    });
+  });
+}
 
 template <typename T> class init;
 template <typename T> class add;

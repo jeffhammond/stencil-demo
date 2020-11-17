@@ -1,6 +1,83 @@
 #include "prk_sycl.h"
 #include "prk_util.h"
-#include "stencil_sycl.hpp"
+
+// declare the kernel name used in SYCL parallel_for
+template <typename T> class star2_usm;
+
+template <typename T>
+void star2(sycl::queue & q, const size_t n, const T * in, T * out)
+{
+  q.submit([&](sycl::handler& h) {
+    h.parallel_for<class star2_usm<T>>(sycl::range<2> {n-4,n-4}, sycl::id<2> {2,2}, [=] (sycl::item<2> it) {
+        const auto i = it[0];
+        const auto j = it[1];
+        out[i*n+j] += +in[i*n+(j+1)] * static_cast<T>(0.25)
+                              +in[i*n+(j-1)] * static_cast<T>(-0.25)
+                              +in[(i+1)*n+j] * static_cast<T>(0.25)
+                              +in[(i-1)*n+j] * static_cast<T>(-0.25)
+                              +in[i*n+(j+2)] * static_cast<T>(0.125)
+                              +in[i*n+(j-2)] * static_cast<T>(-0.125)
+                              +in[(i+2)*n+j] * static_cast<T>(0.125)
+                              +in[(i-2)*n+j] * static_cast<T>(-0.125);
+    });
+  });
+}
+
+// declare the kernel name used in SYCL parallel_for
+template <typename T> class star3_usm;
+
+template <typename T>
+void star3(sycl::queue & q, const size_t n, const T * in, T * out)
+{
+  q.submit([&](sycl::handler& h) {
+    h.parallel_for<class star3_usm<T>>(sycl::range<2> {n-6,n-6}, sycl::id<2> {3,3}, [=] (sycl::item<2> it) {
+        const auto i = it[0];
+        const auto j = it[1];
+        out[i*n+j] += +in[i*n+(j+1)] * static_cast<T>(0.166666666667)
+                              +in[i*n+(j-1)] * static_cast<T>(-0.166666666667)
+                              +in[(i+1)*n+j] * static_cast<T>(0.166666666667)
+                              +in[(i-1)*n+j] * static_cast<T>(-0.166666666667)
+                              +in[i*n+(j+2)] * static_cast<T>(0.0833333333333)
+                              +in[i*n+(j-2)] * static_cast<T>(-0.0833333333333)
+                              +in[(i+2)*n+j] * static_cast<T>(0.0833333333333)
+                              +in[(i-2)*n+j] * static_cast<T>(-0.0833333333333)
+                              +in[i*n+(j+3)] * static_cast<T>(0.0555555555556)
+                              +in[i*n+(j-3)] * static_cast<T>(-0.0555555555556)
+                              +in[(i+3)*n+j] * static_cast<T>(0.0555555555556)
+                              +in[(i-3)*n+j] * static_cast<T>(-0.0555555555556);
+    });
+  });
+}
+
+// declare the kernel name used in SYCL parallel_for
+template <typename T> class star4_usm;
+
+template <typename T>
+void star4(sycl::queue & q, const size_t n, const T * in, T * out)
+{
+  q.submit([&](sycl::handler& h) {
+    h.parallel_for<class star4_usm<T>>(sycl::range<2> {n-8,n-8}, sycl::id<2> {4,4}, [=] (sycl::item<2> it) {
+        const auto i = it[0];
+        const auto j = it[1];
+        out[i*n+j] += +in[i*n+(j+1)] * static_cast<T>(0.125)
+                              +in[i*n+(j-1)] * static_cast<T>(-0.125)
+                              +in[(i+1)*n+j] * static_cast<T>(0.125)
+                              +in[(i-1)*n+j] * static_cast<T>(-0.125)
+                              +in[i*n+(j+2)] * static_cast<T>(0.0625)
+                              +in[i*n+(j-2)] * static_cast<T>(-0.0625)
+                              +in[(i+2)*n+j] * static_cast<T>(0.0625)
+                              +in[(i-2)*n+j] * static_cast<T>(-0.0625)
+                              +in[i*n+(j+3)] * static_cast<T>(0.0416666666667)
+                              +in[i*n+(j-3)] * static_cast<T>(-0.0416666666667)
+                              +in[(i+3)*n+j] * static_cast<T>(0.0416666666667)
+                              +in[(i-3)*n+j] * static_cast<T>(-0.0416666666667)
+                              +in[i*n+(j+4)] * static_cast<T>(0.03125)
+                              +in[i*n+(j-4)] * static_cast<T>(-0.03125)
+                              +in[(i+4)*n+j] * static_cast<T>(0.03125)
+                              +in[(i-4)*n+j] * static_cast<T>(-0.03125);
+    });
+  });
+}
 
 template <typename T> class init;
 template <typename T> class add;
