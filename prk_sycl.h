@@ -12,12 +12,6 @@
 
 namespace sycl = cl::sycl;
 
-#ifdef __COMPUTECPP__
-namespace syclx = cl::sycl::experimental;
-#else
-namespace syclx = cl::sycl;
-#endif
-
 #ifdef PRK_SYCL_USE_FLOAT
 typedef float prk_float;
 #else
