@@ -2,8 +2,6 @@
 *.s                             # Assembly output
 *.ll                            # LLVM intermediate
 *.o                             # Object files
-*/*.o
-*/*/*.o
 core.*                          # core files
 octave-workspace                # Octave crashes
 *.swp                           # Vim
@@ -13,32 +11,13 @@ octave-workspace                # Octave crashes
 *__genmod.*                     # Intel Fortran compiler
 *.patch                         # patch files
 *.dbg                           # Flang
-
-common/make.defs
-scripts/small/runfgmpi
-scripts/wide/runfgmpi
-scripts/small/runfenix
-
-deps/
-
-*.incl                          # PRK C89 stencil generated code
-*/*.incl
-*/*/*.incl
-func.c                          # PRK C89 stencil generated code
-*/func.c
-*/*/func.c
-
 *.cobaltlog                     # ALCF Cobalt scheduler
 *.output                        # ALCF Cobalt scheduler
 *.error                         # ALCF Cobalt scheduler
 
-*.log
-*.log2
-*.log3
-
-Cxx11/stencil
-Cxx11/stencil-sycl
-Cxx11/stencil-sycl-explicit
-Cxx11/stencil-sycl-explicit-usm
-Cxx11/stencil-sycl-usm
-Cxx11/stencil-2d-sycl
+stencil
+stencil-sycl
+stencil-sycl-explicit
+stencil-sycl-explicit-usm
+stencil-sycl-usm
+stencil-2d-sycl
