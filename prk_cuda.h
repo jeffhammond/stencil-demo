@@ -1,10 +1,6 @@
 #ifndef PRK_CUDA_HPP
 #define PRK_CUDA_HPP
 
-#include <iostream>
-#include <vector>
-#include <array>
-
 #ifndef __NVCC__
 #warning Please compile CUDA code with CC=nvcc.
 #include <cuda.h>
@@ -13,16 +9,7 @@
 #include <cuda_device_runtime_api.h>
 #endif
 
-#if defined(PRK_USE_CUBLAS)
-#if defined(__NVCC__)
-#include <cublas_v2.h>
-#else
-#error Sorry, no CUBLAS without NVCC.
-#endif
-#endif
-
-#ifdef __CORIANDERCC__
-// Coriander does not support double
+#if 0
 typedef float prk_float;
 #else
 typedef double prk_float;
@@ -41,20 +28,6 @@ namespace prk
                 std::abort();
             }
         }
-
-#if defined(PRK_USE_CUBLAS)
-        // It seems that Coriander defines cublasStatus_t to cudaError_t
-        // because the compiler complains that this is a redefinition.
-        void check(cublasStatus_t rc)
-        {
-            if (rc==CUBLAS_STATUS_SUCCESS) {
-                return;
-            } else {
-                std::cerr << "PRK CUBLAS error: " << rc << std::endl;
-                std::abort();
-            }
-        }
-#endif
 
         class info {
 
@@ -102,7 +75,6 @@ namespace prk
                 void print() {
                     for (int i=0; i<nDevices; ++i) {
                         std::cout << "device name: " << vDevices[i].name << "\n";
-#ifndef __CORIANDERCC__
                         std::cout << "total global memory:     " << vDevices[i].totalGlobalMem << "\n";
                         std::cout << "max threads per block:   " << vDevices[i].maxThreadsPerBlock << "\n";
                         std::cout << "max threads dim:         " << vDevices[i].maxThreadsDim[0] << ","
@@ -113,7 +85,6 @@ namespace prk
                                                                  << vDevices[i].maxGridSize[2] << "\n";
                         std::cout << "memory clock rate (KHz): " << vDevices[i].memoryClockRate << "\n";
                         std::cout << "memory bus width (bits): " << vDevices[i].memoryBusWidth << "\n";
-#endif
                     }
                 }
 

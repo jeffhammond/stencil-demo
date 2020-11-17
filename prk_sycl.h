@@ -1,38 +1,14 @@
 #ifndef PRK_SYCL_HPP
 #define PRK_SYCL_HPP
 
-#include <cstdlib>
-#include <iostream>
-
 #include "CL/sycl.hpp"
-
-#ifdef __COMPUTECPP__
-#include "SYCL/experimental/usm.h"
-#endif
 
 namespace sycl = cl::sycl;
 
-#ifdef PRK_SYCL_USE_FLOAT
+#if 0
 typedef float prk_float;
 #else
 typedef double prk_float;
-#endif
-
-#ifdef __SYCL_DEVICE_ONLY__
-#define OPENCL_CONSTANT __attribute__((opencl_constant))
-#else
-#define OPENCL_CONSTANT
-#endif
-
-// EXAMPLE OF PRINTF DEBUGGING IN SYCL DEVICE CODE
-//static const OPENCL_CONSTANT char format[] = "%d:%lf,%lf,%lf\n";
-//sycl::intel::experimental::printf(format, g, p_A[i], p_B[i], p_C[i]);
-
-// prebuilt kernels are not required/not fully supported on hipSYCL and triSYCL
-#if defined(TRISYCL) || defined(__HIPSYCL__) || defined(DPCPP)
-#define PREBUILD_KERNEL 0
-#else
-#define PREBUILD_KERNEL 1
 #endif
 
 namespace prk {
@@ -59,11 +35,10 @@ namespace prk {
         }
 
         bool has_fp64(const sycl::queue & q) {
-#if defined(TRISYCL) || defined(__HIPSYCL__) || defined(DPCPP_CUDA)
-            return true;
+#if 0
+            return false;
 #else
-            auto device = q.get_device();
-            return device.has_extension(sycl::string_class("cl_khr_fp64"));
+            return true;
 #endif
         }
 
