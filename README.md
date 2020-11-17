@@ -1,4 +1,8 @@
+# Getting Started
 
+## DPC++
+
+Git hash: d81081f70085de828d2ff8acdd3e62621af5d00c
 
 
 
