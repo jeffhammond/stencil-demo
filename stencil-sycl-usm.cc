@@ -20,24 +20,11 @@ void run(sycl::queue & q, int iterations, size_t n, size_t block_size, bool star
   auto stencil = nothing<T>;
   if (star) {
       switch (radius) {
-          case 1: stencil = star1; break;
           case 2: stencil = star2; break;
           case 3: stencil = star3; break;
           case 4: stencil = star4; break;
-          case 5: stencil = star5; break;
       }
   }
-#if 0
-  else {
-      switch (radius) {
-          case 1: stencil = grid1; break;
-          case 2: stencil = grid2; break;
-          case 3: stencil = grid3; break;
-          case 4: stencil = grid4; break;
-          case 5: stencil = grid5; break;
-      }
-  }
-#endif
 
   size_t padded_n = block_size * prk::divceil(n,block_size);
   sycl::range<2> global{padded_n,padded_n};
@@ -133,7 +120,7 @@ void run(sycl::queue & q, int iterations, size_t n, size_t block_size, bool star
 
 int main(int argc, char * argv[])
 {
-  std::cout << "Parallel Research Kernels version " << PRKVERSION << std::endl;
+  std::cout << "Parallel Research Kernels version " << std::endl;
   std::cout << "C++11/SYCL Stencil execution on 2D grid" << std::endl;
 
   //////////////////////////////////////////////////////////////////////

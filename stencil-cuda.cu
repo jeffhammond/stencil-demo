@@ -1,14 +1,65 @@
 #include "prk_util.h"
 #include "prk_cuda.h"
-#include "stencil_cuda.hpp"
+
+__global__ void star2(const int n, const prk_float * in, prk_float * out) {
+    const int i = blockIdx.x * blockDim.x + threadIdx.x;
+    const int j = blockIdx.y * blockDim.y + threadIdx.y;
+    if ( (2 <= i) && (i < n-2) && (2 <= j) && (j < n-2) ) {
+            out[i*n+j] += +in[(i)*n+(j-2)] * -0.125
+                          +in[(i)*n+(j-1)] * -0.25
+                          +in[(i-2)*n+(j)] * -0.125
+                          +in[(i-1)*n+(j)] * -0.25
+                          +in[(i+1)*n+(j)] * 0.25
+                          +in[(i+2)*n+(j)] * 0.125
+                          +in[(i)*n+(j+1)] * 0.25
+                          +in[(i)*n+(j+2)] * 0.125;
+     }
+}
+
+__global__ void star3(const int n, const prk_float * in, prk_float * out) {
+    const int i = blockIdx.x * blockDim.x + threadIdx.x;
+    const int j = blockIdx.y * blockDim.y + threadIdx.y;
+    if ( (3 <= i) && (i < n-3) && (3 <= j) && (j < n-3) ) {
+            out[i*n+j] += +in[(i)*n+(j-3)] * -0.05555555555555555
+                          +in[(i)*n+(j-2)] * -0.08333333333333333
+                          +in[(i)*n+(j-1)] * -0.16666666666666666
+                          +in[(i-3)*n+(j)] * -0.05555555555555555
+                          +in[(i-2)*n+(j)] * -0.08333333333333333
+                          +in[(i-1)*n+(j)] * -0.16666666666666666
+                          +in[(i+1)*n+(j)] * 0.16666666666666666
+                          +in[(i+2)*n+(j)] * 0.08333333333333333
+                          +in[(i+3)*n+(j)] * 0.05555555555555555
+                          +in[(i)*n+(j+1)] * 0.16666666666666666
+                          +in[(i)*n+(j+2)] * 0.08333333333333333
+                          +in[(i)*n+(j+3)] * 0.05555555555555555;
+     }
+}
+
+__global__ void star4(const int n, const prk_float * in, prk_float * out) {
+    const int i = blockIdx.x * blockDim.x + threadIdx.x;
+    const int j = blockIdx.y * blockDim.y + threadIdx.y;
+    if ( (4 <= i) && (i < n-4) && (4 <= j) && (j < n-4) ) {
+            out[i*n+j] += +in[(i)*n+(j-4)] * -0.03125
+                          +in[(i)*n+(j-3)] * -0.041666666666666664
+                          +in[(i)*n+(j-2)] * -0.0625
+                          +in[(i)*n+(j-1)] * -0.125
+                          +in[(i-4)*n+(j)] * -0.03125
+                          +in[(i-3)*n+(j)] * -0.041666666666666664
+                          +in[(i-2)*n+(j)] * -0.0625
+                          +in[(i-1)*n+(j)] * -0.125
+                          +in[(i+1)*n+(j)] * 0.125
+                          +in[(i+2)*n+(j)] * 0.0625
+                          +in[(i+3)*n+(j)] * 0.041666666666666664
+                          +in[(i+4)*n+(j)] * 0.03125
+                          +in[(i)*n+(j+1)] * 0.125
+                          +in[(i)*n+(j+2)] * 0.0625
+                          +in[(i)*n+(j+3)] * 0.041666666666666664
+                          +in[(i)*n+(j+4)] * 0.03125;
+     }
+}
 
 __global__ void nothing(const int n, const prk_float * in, prk_float * out)
 {
-    //printf("You are trying to use a stencil that does not exist.\n");
-    //printf("Please generate the new stencil using the code generator.\n");
-    // n will never be zero - this is to silence compiler warnings.
-    //if (n==0) printf("in=%p out=%p\n", in, out);
-    //abort();
 }
 
 __global__ void add(const int n, prk_float * in)
@@ -23,7 +74,7 @@ __global__ void add(const int n, prk_float * in)
 
 int main(int argc, char* argv[])
 {
-  std::cout << "Parallel Research Kernels version " << PRKVERSION << std::endl;
+  std::cout << "Parallel Research Kernels version " << std::endl;
   std::cout << "C++11/CUDA Stencil execution on 2D grid" << std::endl;
 
   prk::CUDA::info info;
@@ -96,19 +147,9 @@ int main(int argc, char* argv[])
   auto stencil = nothing;
   if (star) {
       switch (radius) {
-          case 1: stencil = star1; break;
           case 2: stencil = star2; break;
           case 3: stencil = star3; break;
           case 4: stencil = star4; break;
-          case 5: stencil = star5; break;
-      }
-  } else {
-      switch (radius) {
-          case 1: stencil = grid1; break;
-          case 2: stencil = grid2; break;
-          case 3: stencil = grid3; break;
-          case 4: stencil = grid4; break;
-          case 5: stencil = grid5; break;
       }
   }
 
