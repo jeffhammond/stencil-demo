@@ -1,4 +1,4 @@
-include ../../common/make.defs
+include make.defs
 
 # debugging
 ifdef VERBOSE
