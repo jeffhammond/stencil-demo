@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
   std::cout << "C++11/CUDA Stencil execution on 2D grid" << std::endl;
 
   prk::CUDA::info info;
-  info.print();
+  //info.print();
 
   //////////////////////////////////////////////////////////////////////
   // Process and test input parameters
