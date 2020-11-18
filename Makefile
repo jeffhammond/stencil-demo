@@ -1,20 +1,12 @@
 include make.defs
 
-# debugging
 ifdef VERBOSE
     CPPFLAGS += -DVERBOSE
 endif
 
 CXXFLAGS  = $(DEFAULT_OPT_FLAGS) $(CPPFLAGS)
 
-#BOOSTFLAGS = $(BOOSTFLAG)
-#RANGEFLAGS = $(RANGEFLAG) -DUSE_RANGES
 SYCLFLAGS = $(SYCLFLAG)
-
-ifdef OCCADIR
-  include ${OCCADIR}/scripts/makefile
-endif
-OCCAFLAGS = -I${OCCADIR}/include -Wl,-rpath -Wl,${OCCADIR}/lib -L${OCCADIR}/lib -locca
 
 .PHONY: all clean cuda sycl
 
