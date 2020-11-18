@@ -1,7 +1,7 @@
 #include "prk_util.h"
 #include "prk_cuda.h"
 
-__global__ void star2(const int n, const prk_float * in, prk_float * out) {
+__global__ void star2(const int n, const double * in, double * out) {
     const int i = blockIdx.x * blockDim.x + threadIdx.x;
     const int j = blockIdx.y * blockDim.y + threadIdx.y;
     if ( (2 <= i) && (i < n-2) && (2 <= j) && (j < n-2) ) {
@@ -16,7 +16,7 @@ __global__ void star2(const int n, const prk_float * in, prk_float * out) {
      }
 }
 
-__global__ void star3(const int n, const prk_float * in, prk_float * out) {
+__global__ void star3(const int n, const double * in, double * out) {
     const int i = blockIdx.x * blockDim.x + threadIdx.x;
     const int j = blockIdx.y * blockDim.y + threadIdx.y;
     if ( (3 <= i) && (i < n-3) && (3 <= j) && (j < n-3) ) {
@@ -35,7 +35,7 @@ __global__ void star3(const int n, const prk_float * in, prk_float * out) {
      }
 }
 
-__global__ void star4(const int n, const prk_float * in, prk_float * out) {
+__global__ void star4(const int n, const double * in, double * out) {
     const int i = blockIdx.x * blockDim.x + threadIdx.x;
     const int j = blockIdx.y * blockDim.y + threadIdx.y;
     if ( (4 <= i) && (i < n-4) && (4 <= j) && (j < n-4) ) {
@@ -58,17 +58,17 @@ __global__ void star4(const int n, const prk_float * in, prk_float * out) {
      }
 }
 
-__global__ void nothing(const int n, const prk_float * in, prk_float * out)
+__global__ void nothing(const int n, const double * in, double * out)
 {
 }
 
-__global__ void add(const int n, prk_float * in)
+__global__ void add(const int n, double * in)
 {
     auto i = blockIdx.x * blockDim.x + threadIdx.x;
     auto j = blockIdx.y * blockDim.y + threadIdx.y;
 
     if ((i<n) && (j<n)) {
-        in[i*n+j] += (prk_float)1;
+        in[i*n+j] += (double)1;
     }
 }
 
@@ -164,27 +164,27 @@ int main(int argc, char* argv[])
   double stencil_time{0};
 
   const size_t nelems = (size_t)n * (size_t)n;
-  const size_t bytes = nelems * sizeof(prk_float);
-  prk_float * h_in;
-  prk_float * h_out;
+  const size_t bytes = nelems * sizeof(double);
+  double * h_in;
+  double * h_out;
 #ifndef __CORIANDERCC__
   prk::CUDA::check( cudaMallocHost((void**)&h_in, bytes) );
   prk::CUDA::check( cudaMallocHost((void**)&h_out, bytes) );
 #else
-  h_in = new prk_float[nelems];
-  h_out = new prk_float[nelems];
+  h_in = new double[nelems];
+  h_out = new double[nelems];
 #endif
 
   for (int i=0; i<n; i++) {
     for (int j=0; j<n; j++) {
-      h_in[i*n+j]  = static_cast<prk_float>(i+j);
-      h_out[i*n+j] = static_cast<prk_float>(0);
+      h_in[i*n+j]  = static_cast<double>(i+j);
+      h_out[i*n+j] = static_cast<double>(0);
     }
   }
 
   // copy input from host to device
-  prk_float * d_in;
-  prk_float * d_out;
+  double * d_in;
+  double * d_out;
   prk::CUDA::check( cudaMalloc((void**)&d_in, bytes) );
   prk::CUDA::check( cudaMalloc((void**)&d_out, bytes) );
   prk::CUDA::check( cudaMemcpy(d_in, &(h_in[0]), bytes, cudaMemcpyHostToDevice) );
