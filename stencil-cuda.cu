@@ -2,8 +2,8 @@
 #include "prk_cuda.h"
 
 __global__ void star2(const int n, const double * in, double * out) {
-    const int i = blockIdx.x * blockDim.x + threadIdx.x;
-    const int j = blockIdx.y * blockDim.y + threadIdx.y;
+    const int i = blockIdx.y * blockDim.y + threadIdx.y;
+    const int j = blockIdx.x * blockDim.x + threadIdx.x;
     if ( (2 <= i) && (i < n-2) && (2 <= j) && (j < n-2) ) {
             out[i*n+j] += +in[(i)*n+(j-2)] * -0.125
                           +in[(i)*n+(j-1)] * -0.25
@@ -17,8 +17,8 @@ __global__ void star2(const int n, const double * in, double * out) {
 }
 
 __global__ void star3(const int n, const double * in, double * out) {
-    const int i = blockIdx.x * blockDim.x + threadIdx.x;
-    const int j = blockIdx.y * blockDim.y + threadIdx.y;
+    const int i = blockIdx.y * blockDim.y + threadIdx.y;
+    const int j = blockIdx.x * blockDim.x + threadIdx.x;
     if ( (3 <= i) && (i < n-3) && (3 <= j) && (j < n-3) ) {
             out[i*n+j] += +in[(i)*n+(j-3)] * -0.05555555555555555
                           +in[(i)*n+(j-2)] * -0.08333333333333333
@@ -36,8 +36,8 @@ __global__ void star3(const int n, const double * in, double * out) {
 }
 
 __global__ void star4(const int n, const double * in, double * out) {
-    const int i = blockIdx.x * blockDim.x + threadIdx.x;
-    const int j = blockIdx.y * blockDim.y + threadIdx.y;
+    const int i = blockIdx.y * blockDim.y + threadIdx.y;
+    const int j = blockIdx.x * blockDim.x + threadIdx.x;
     if ( (4 <= i) && (i < n-4) && (4 <= j) && (j < n-4) ) {
             out[i*n+j] += +in[(i)*n+(j-4)] * -0.03125
                           +in[(i)*n+(j-3)] * -0.041666666666666664
