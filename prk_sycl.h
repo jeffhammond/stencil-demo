@@ -5,12 +5,6 @@
 
 namespace sycl = cl::sycl;
 
-#if 0
-typedef float prk_float;
-#else
-typedef double prk_float;
-#endif
-
 namespace prk {
 
     // There seems to be an issue with the clang CUDA/HIP toolchains not having

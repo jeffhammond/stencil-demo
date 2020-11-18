@@ -9,12 +9,6 @@
 #include <cuda_device_runtime_api.h>
 #endif
 
-#if 0
-typedef float prk_float;
-#else
-typedef double prk_float;
-#endif
-
 namespace prk
 {
     namespace CUDA
