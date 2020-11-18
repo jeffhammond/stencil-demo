@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd $HOME
-if [ -f ${HOME}/DPCPP ] ; then
+if [ -d ${HOME}/DPCPP ] ; then
     cd ${HOME}/DPCPP
     git fetch --all
     git checkout sycl
