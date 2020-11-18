@@ -1,198 +1,78 @@
 #include "prk_sycl.h"
 #include "prk_util.h"
 
-// declare the kernel name used in SYCL parallel_for
-template <typename T> class star2_usm;
-
-template <typename T>
-void star2(sycl::queue & q, const size_t n, const T * in, T * out)
+void star2(sycl::queue & q, const size_t n, const double * in, double * out)
 {
   q.submit([&](sycl::handler& h) {
-    h.parallel_for<class star2_usm<T>>(sycl::range<2> {n-4,n-4}, sycl::id<2> {2,2}, [=] (sycl::item<2> it) {
+    h.parallel_for(sycl::range<2> {n-4,n-4}, sycl::id<2> {2,2}, [=] (sycl::item<2> it) {
         const auto i = it[0];
         const auto j = it[1];
-        out[i*n+j] += +in[i*n+(j+1)] * static_cast<T>(0.25)
-                              +in[i*n+(j-1)] * static_cast<T>(-0.25)
-                              +in[(i+1)*n+j] * static_cast<T>(0.25)
-                              +in[(i-1)*n+j] * static_cast<T>(-0.25)
-                              +in[i*n+(j+2)] * static_cast<T>(0.125)
-                              +in[i*n+(j-2)] * static_cast<T>(-0.125)
-                              +in[(i+2)*n+j] * static_cast<T>(0.125)
-                              +in[(i-2)*n+j] * static_cast<T>(-0.125);
+        out[i*n+j] += +in[i*n+(j+1)] * static_cast<double>(0.25)
+                              +in[i*n+(j-1)] * static_cast<double>(-0.25)
+                              +in[(i+1)*n+j] * static_cast<double>(0.25)
+                              +in[(i-1)*n+j] * static_cast<double>(-0.25)
+                              +in[i*n+(j+2)] * static_cast<double>(0.125)
+                              +in[i*n+(j-2)] * static_cast<double>(-0.125)
+                              +in[(i+2)*n+j] * static_cast<double>(0.125)
+                              +in[(i-2)*n+j] * static_cast<double>(-0.125);
     });
   });
 }
 
-// declare the kernel name used in SYCL parallel_for
-template <typename T> class star3_usm;
-
-template <typename T>
-void star3(sycl::queue & q, const size_t n, const T * in, T * out)
+void star3(sycl::queue & q, const size_t n, const double * in, double * out)
 {
   q.submit([&](sycl::handler& h) {
-    h.parallel_for<class star3_usm<T>>(sycl::range<2> {n-6,n-6}, sycl::id<2> {3,3}, [=] (sycl::item<2> it) {
+    h.parallel_for(sycl::range<2> {n-6,n-6}, sycl::id<2> {3,3}, [=] (sycl::item<2> it) {
         const auto i = it[0];
         const auto j = it[1];
-        out[i*n+j] += +in[i*n+(j+1)] * static_cast<T>(0.166666666667)
-                              +in[i*n+(j-1)] * static_cast<T>(-0.166666666667)
-                              +in[(i+1)*n+j] * static_cast<T>(0.166666666667)
-                              +in[(i-1)*n+j] * static_cast<T>(-0.166666666667)
-                              +in[i*n+(j+2)] * static_cast<T>(0.0833333333333)
-                              +in[i*n+(j-2)] * static_cast<T>(-0.0833333333333)
-                              +in[(i+2)*n+j] * static_cast<T>(0.0833333333333)
-                              +in[(i-2)*n+j] * static_cast<T>(-0.0833333333333)
-                              +in[i*n+(j+3)] * static_cast<T>(0.0555555555556)
-                              +in[i*n+(j-3)] * static_cast<T>(-0.0555555555556)
-                              +in[(i+3)*n+j] * static_cast<T>(0.0555555555556)
-                              +in[(i-3)*n+j] * static_cast<T>(-0.0555555555556);
+        out[i*n+j] += +in[i*n+(j+1)] * static_cast<double>(0.166666666667)
+                              +in[i*n+(j-1)] * static_cast<double>(-0.166666666667)
+                              +in[(i+1)*n+j] * static_cast<double>(0.166666666667)
+                              +in[(i-1)*n+j] * static_cast<double>(-0.166666666667)
+                              +in[i*n+(j+2)] * static_cast<double>(0.0833333333333)
+                              +in[i*n+(j-2)] * static_cast<double>(-0.0833333333333)
+                              +in[(i+2)*n+j] * static_cast<double>(0.0833333333333)
+                              +in[(i-2)*n+j] * static_cast<double>(-0.0833333333333)
+                              +in[i*n+(j+3)] * static_cast<double>(0.0555555555556)
+                              +in[i*n+(j-3)] * static_cast<double>(-0.0555555555556)
+                              +in[(i+3)*n+j] * static_cast<double>(0.0555555555556)
+                              +in[(i-3)*n+j] * static_cast<double>(-0.0555555555556);
     });
   });
 }
 
-// declare the kernel name used in SYCL parallel_for
-template <typename T> class star4_usm;
-
-template <typename T>
-void star4(sycl::queue & q, const size_t n, const T * in, T * out)
+void star4(sycl::queue & q, const size_t n, const double * in, double * out)
 {
   q.submit([&](sycl::handler& h) {
-    h.parallel_for<class star4_usm<T>>(sycl::range<2> {n-8,n-8}, sycl::id<2> {4,4}, [=] (sycl::item<2> it) {
+    h.parallel_for(sycl::range<2> {n-8,n-8}, sycl::id<2> {4,4}, [=] (sycl::item<2> it) {
         const auto i = it[0];
         const auto j = it[1];
-        out[i*n+j] += +in[i*n+(j+1)] * static_cast<T>(0.125)
-                              +in[i*n+(j-1)] * static_cast<T>(-0.125)
-                              +in[(i+1)*n+j] * static_cast<T>(0.125)
-                              +in[(i-1)*n+j] * static_cast<T>(-0.125)
-                              +in[i*n+(j+2)] * static_cast<T>(0.0625)
-                              +in[i*n+(j-2)] * static_cast<T>(-0.0625)
-                              +in[(i+2)*n+j] * static_cast<T>(0.0625)
-                              +in[(i-2)*n+j] * static_cast<T>(-0.0625)
-                              +in[i*n+(j+3)] * static_cast<T>(0.0416666666667)
-                              +in[i*n+(j-3)] * static_cast<T>(-0.0416666666667)
-                              +in[(i+3)*n+j] * static_cast<T>(0.0416666666667)
-                              +in[(i-3)*n+j] * static_cast<T>(-0.0416666666667)
-                              +in[i*n+(j+4)] * static_cast<T>(0.03125)
-                              +in[i*n+(j-4)] * static_cast<T>(-0.03125)
-                              +in[(i+4)*n+j] * static_cast<T>(0.03125)
-                              +in[(i-4)*n+j] * static_cast<T>(-0.03125);
+        out[i*n+j] += +in[i*n+(j+1)] * static_cast<double>(0.125)
+                              +in[i*n+(j-1)] * static_cast<double>(-0.125)
+                              +in[(i+1)*n+j] * static_cast<double>(0.125)
+                              +in[(i-1)*n+j] * static_cast<double>(-0.125)
+                              +in[i*n+(j+2)] * static_cast<double>(0.0625)
+                              +in[i*n+(j-2)] * static_cast<double>(-0.0625)
+                              +in[(i+2)*n+j] * static_cast<double>(0.0625)
+                              +in[(i-2)*n+j] * static_cast<double>(-0.0625)
+                              +in[i*n+(j+3)] * static_cast<double>(0.0416666666667)
+                              +in[i*n+(j-3)] * static_cast<double>(-0.0416666666667)
+                              +in[(i+3)*n+j] * static_cast<double>(0.0416666666667)
+                              +in[(i-3)*n+j] * static_cast<double>(-0.0416666666667)
+                              +in[i*n+(j+4)] * static_cast<double>(0.03125)
+                              +in[i*n+(j-4)] * static_cast<double>(-0.03125)
+                              +in[(i+4)*n+j] * static_cast<double>(0.03125)
+                              +in[(i-4)*n+j] * static_cast<double>(-0.03125);
     });
   });
 }
 
-template <typename T> class init;
-template <typename T> class add;
-
-template <typename T>
-void nothing(sycl::queue & q, const size_t n, const T * in, T *out)
+void nothing(sycl::queue & q, const size_t n, const double * in, double *out)
 {
     std::cout << "You are trying to use a stencil that does not exist.\n";
     std::cout << "Please generate the new stencil using the code generator\n";
     std::cout << "and add it to the case-switch in the driver." << std::endl;
     prk::Abort();
-}
-
-template <typename T>
-void run(sycl::queue & q, int iterations, size_t n, size_t block_size, bool star, size_t radius)
-{
-  auto stencil = nothing<T>;
-  if (star) {
-      switch (radius) {
-          case 2: stencil = star2; break;
-          case 3: stencil = star3; break;
-          case 4: stencil = star4; break;
-      }
-  }
-
-  size_t padded_n = block_size * prk::divceil(n,block_size);
-  sycl::range<2> global{padded_n,padded_n};
-  sycl::range<2> local{block_size,block_size};
-
-  //////////////////////////////////////////////////////////////////////
-  // Allocate space and perform the computation
-  //////////////////////////////////////////////////////////////////////
-
-  double stencil_time{0};
-
-  T * in  = sycl::malloc_shared<T>(n*n, q);
-  T * out = sycl::malloc_shared<T>(n*n, q);
-
-  try {
-
-    q.parallel_for<class init<T>>(sycl::range<2> {n, n}, [=] (sycl::id<2> it) {
-          const auto i = it[0];
-          const auto j = it[1];
-          in[i*n+j] = static_cast<T>(i+j);
-    });
-    q.wait();
-
-    for (int iter = 0; iter<=iterations; iter++) {
-
-      if (iter==1) stencil_time = prk::wtime();
-
-      stencil(q, n, in, out);
-
-      q.parallel_for<class add<T>>(sycl::range<2> {n, n}, sycl::id<2> {0, 0}, [=] (sycl::id<2> it) {
-          const auto i = it[0];
-          const auto j = it[1];
-          in[i*n+j] += static_cast<T>(1);
-      });
-      q.wait();
-    }
-    stencil_time = prk::wtime() - stencil_time;
-
-    sycl::free(in, q);
-  }
-  catch (sycl::exception & e) {
-    std::cout << e.what() << std::endl;
-    prk::SYCL::print_exception_details(e);
-    return;
-  }
-  catch (std::exception & e) {
-    std::cout << e.what() << std::endl;
-    return;
-  }
-  catch (const char * e) {
-    std::cout << e << std::endl;
-    return;
-  }
-
-  //////////////////////////////////////////////////////////////////////
-  /// Analyze and output results
-  //////////////////////////////////////////////////////////////////////
-
-  // interior of grid with respect to stencil
-  auto active_points = (n-2L*radius)*(n-2L*radius);
-
-  // compute L1 norm in parallel
-  double norm(0);
-  for (int i=radius; i<n-radius; i++) {
-    for (int j=radius; j<n-radius; j++) {
-      norm += prk::abs(out[i*n+j]);
-    }
-  }
-  norm /= active_points;
-
-  sycl::free(out, q);
-
-  // verify correctness
-  const double epsilon = 1.0e-8;
-  const double reference_norm = 2*(iterations+1);
-  if (prk::abs(norm-reference_norm) > epsilon) {
-    std::cout << "ERROR: L1 norm = " << norm
-              << " Reference L1 norm = " << reference_norm << std::endl;
-  } else {
-    std::cout << "Solution validates" << std::endl;
-#ifdef VERBOSE
-    std::cout << "L1 norm = " << norm
-              << " Reference L1 norm = " << reference_norm << std::endl;
-#endif
-    const size_t stencil_size = star ? 4*radius+1 : (2*radius+1)*(2*radius+1);
-    size_t flops = (2L*stencil_size+1L) * active_points;
-    double avgtime = stencil_time/iterations;
-    std::cout << 8*sizeof(T) << "B "
-              << "Rate (MFlops/s): " << 1.0e-6 * static_cast<double>(flops)/avgtime
-              << " Avg time (s): " << avgtime << std::endl;
-  }
 }
 
 int main(int argc, char * argv[])
@@ -206,14 +86,13 @@ int main(int argc, char * argv[])
 
   int iterations;
   size_t n, block_size;
-  bool star = true;
   size_t radius = 2;
 
   block_size = 16;
 
   try {
       if (argc < 3) {
-        throw "Usage: <# iterations> <array dimension> [<block size> <star/grid> <stencil radius>]";
+        throw "Usage: <# iterations> <array dimension> [<block size> <stencil radius>]";
       }
 
       // number of times to run the algorithm
@@ -235,18 +114,14 @@ int main(int argc, char * argv[])
           if (block_size <= 0) block_size = n;
           if (block_size > n) block_size = n;
       }
-
-      // stencil pattern
-      if (argc > 4) {
-          auto stencil = std::string(argv[4]);
-          auto grid = std::string("grid");
-          star = (stencil == grid) ? false : true;
+      if (n % block_size) {
+        throw "ERROR: block size does not evenly divide grid size";
       }
 
       // stencil radius
       radius = 2;
-      if (argc > 5) {
-          radius = std::atoi(argv[5]);
+      if (argc > 4) {
+          radius = std::atoi(argv[4]);
       }
 
       if ( (radius < 1) || (2*radius+1 > n) ) {
@@ -261,22 +136,60 @@ int main(int argc, char * argv[])
   std::cout << "Number of iterations = " << iterations << std::endl;
   std::cout << "Grid size            = " << n << std::endl;
   std::cout << "Block size           = " << block_size << std::endl;
-  std::cout << "Type of stencil      = " << (star ? "star" : "grid") << std::endl;
   std::cout << "Radius of stencil    = " << radius << std::endl;
 
   //////////////////////////////////////////////////////////////////////
   /// Setup SYCL environment
   //////////////////////////////////////////////////////////////////////
 
+  sycl::queue q(sycl::gpu_selector{}, sycl::property::queue::in_order{});
+  prk::SYCL::print_device_platform(q);
+
+  auto stencil = nothing;
+  switch (radius) {
+      case 2: stencil = star2; break;
+      case 3: stencil = star3; break;
+      case 4: stencil = star4; break;
+  }
+
+  size_t padded_n = block_size * prk::divceil(n,block_size);
+  sycl::range<2> global{padded_n,padded_n};
+  sycl::range<2> local{block_size,block_size};
+
+  //////////////////////////////////////////////////////////////////////
+  // Allocate space and perform the computation
+  //////////////////////////////////////////////////////////////////////
+
+  double stencil_time{0};
+
+  double * in  = sycl::malloc_shared<double>(n*n, q);
+  double * out = sycl::malloc_shared<double>(n*n, q);
+
   try {
-    sycl::queue q(sycl::gpu_selector{}, sycl::property::queue::in_order{});
-    prk::SYCL::print_device_platform(q);
-    bool has_fp64 = prk::SYCL::has_fp64(q);
-    if (has_fp64) {
-      run<double>(q, iterations, n, block_size, star, radius);
-    } else {
-      std::cout << "SYCL GPU device lacks FP64 support." << std::endl;
+
+    q.parallel_for(sycl::range<2> {n, n}, [=] (sycl::id<2> it) {
+          const auto i = it[0];
+          const auto j = it[1];
+          in[i*n+j] = static_cast<double>(i+j);
+    });
+    q.wait();
+
+    for (int iter = 0; iter<=iterations; iter++) {
+
+      if (iter==1) stencil_time = prk::wtime();
+
+      stencil(q, n, in, out);
+
+      q.parallel_for(sycl::range<2> {n, n}, sycl::id<2> {0, 0}, [=] (sycl::id<2> it) {
+          const auto i = it[0];
+          const auto j = it[1];
+          in[i*n+j] += static_cast<double>(1);
+      });
+      q.wait();
     }
+    stencil_time = prk::wtime() - stencil_time;
+
+    sycl::free(in, q);
   }
   catch (sycl::exception & e) {
     std::cout << e.what() << std::endl;
@@ -287,6 +200,44 @@ int main(int argc, char * argv[])
   }
   catch (const char * e) {
     std::cout << e << std::endl;
+  }
+
+  //////////////////////////////////////////////////////////////////////
+  /// Analyze and output results
+  //////////////////////////////////////////////////////////////////////
+
+  // interior of grid with respect to stencil
+  auto active_points = (n-2L*radius)*(n-2L*radius);
+
+  // compute L1 norm in parallel
+  double norm(0);
+  for (size_t i=radius; i<n-radius; i++) {
+    for (size_t j=radius; j<n-radius; j++) {
+      norm += prk::abs(out[i*n+j]);
+    }
+  }
+  norm /= active_points;
+
+  sycl::free(out, q);
+
+  // verify correctness
+  const double epsilon = 1.0e-8;
+  const double reference_norm = 2*(iterations+1);
+  if (prk::abs(norm-reference_norm) > epsilon) {
+    std::cout << "ERROR: L1 norm = " << norm
+              << " Reference L1 norm = " << reference_norm << std::endl;
+  } else {
+    std::cout << "Solution validates" << std::endl;
+#ifdef VERBOSE
+    std::cout << "L1 norm = " << norm
+              << " Reference L1 norm = " << reference_norm << std::endl;
+#endif
+    const size_t stencil_size = 4*radius+1;
+    size_t flops = (2L*stencil_size+1L) * active_points;
+    double avgtime = stencil_time/iterations;
+    std::cout << 8*sizeof(double) << "B "
+              << "Rate (MFlops/s): " << 1.0e-6 * static_cast<double>(flops)/avgtime
+              << " Avg time (s): " << avgtime << std::endl;
   }
 
   return 0;
