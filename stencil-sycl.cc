@@ -105,7 +105,6 @@ void star4(sycl::queue & q, const size_t n, sycl::buffer<double> & d_in, sycl::b
   });
 }
 
-
 void star2(sycl::queue & q, const size_t n, const size_t block_size, sycl::buffer<double> & d_in, sycl::buffer<double> & d_out)
 {
   sycl::range<2> global{n,n};
