@@ -68,7 +68,7 @@ __global__ void add(const int n, double * in)
     auto j = blockIdx.y * blockDim.y + threadIdx.y;
 
     if ((i<n) && (j<n)) {
-        in[i*n+j] += (double)1;
+        in[i*n+j] += 1.0;
     }
 }
 
@@ -82,10 +82,7 @@ int main(int argc, char* argv[])
   //////////////////////////////////////////////////////////////////////
 
   int iterations;
-  size_t n, block_size;
-  size_t radius = 2;
-
-  block_size = 16;
+  size_t n, block_size = 16, radius = 2;
 
   try {
       if (argc < 3) {

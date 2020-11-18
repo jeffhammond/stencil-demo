@@ -85,10 +85,7 @@ int main(int argc, char * argv[])
   //////////////////////////////////////////////////////////////////////
 
   int iterations;
-  size_t n, block_size;
-  size_t radius = 2;
-
-  block_size = 16;
+  size_t n, block_size = 16, radius = 2;
 
   try {
       if (argc < 3) {
