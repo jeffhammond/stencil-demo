@@ -1,22 +1,50 @@
 #include "prk_util.h"
 #include "prk_sycl.h"
 
+void add(sycl::queue & q, const size_t n, sycl::buffer<double> & d_out)
+{
+  q.submit([&](sycl::handler& h) {
+    auto out = d_out.template get_access<sycl::access::mode::read_write>(h);
+    h.parallel_for(sycl::range<2> {n,n}, [=] (sycl::id<2> it) {
+      const size_t i = it.get(0);
+      const size_t j = it.get(1);
+      out[i*n+j] += static_cast<double>(1);
+    });
+  });
+}
+
+void add(sycl::queue & q, const size_t n, const size_t block_size, sycl::buffer<double> & d_out)
+{
+  sycl::range<2> global{n,n};
+  sycl::range<2> local{block_size,block_size};
+  q.submit([&](sycl::handler& h) {
+    auto out = d_out.template get_access<sycl::access::mode::read_write>(h);
+    h.parallel_for(sycl::nd_range{global, local}, [=](sycl::nd_item<2> it) {
+      const size_t i = it.get_global_id(0);
+      const size_t j = it.get_global_id(1);
+      out[i*n+j] += static_cast<double>(1);
+    });
+  });
+}
+
 void star2(sycl::queue & q, const size_t n, sycl::buffer<double> & d_in, sycl::buffer<double> & d_out)
 {
   q.submit([&](sycl::handler& h) {
     auto in  = d_in.template get_access<sycl::access::mode::read>(h);
     auto out = d_out.template get_access<sycl::access::mode::read_write>(h);
-    h.parallel_for(sycl::range<2> {n-4,n-4}, sycl::id<2> {2,2}, [=] (sycl::item<2> it) {
-        const auto i = it[0];
-        const auto j = it[1];
+    h.parallel_for(sycl::range<2> {n,n}, [=] (sycl::id<2> it) {
+      const size_t i = it.get(0);
+      const size_t j = it.get(1);
+      if ( (2 <= i) && (i < n-2) && (2 <= j) && (j < n-2) ) {
         out[i*n+j] += +in[i*n+(j+1)] * static_cast<double>(0.25)
-                              +in[i*n+(j-1)] * static_cast<double>(-0.25)
-                              +in[(i+1)*n+j] * static_cast<double>(0.25)
-                              +in[(i-1)*n+j] * static_cast<double>(-0.25)
-                              +in[i*n+(j+2)] * static_cast<double>(0.125)
-                              +in[i*n+(j-2)] * static_cast<double>(-0.125)
-                              +in[(i+2)*n+j] * static_cast<double>(0.125)
-                              +in[(i-2)*n+j] * static_cast<double>(-0.125);
+                      +in[i*n+(j-1)] * static_cast<double>(-0.25)
+                      +in[(i+1)*n+j] * static_cast<double>(0.25)
+                      +in[(i-1)*n+j] * static_cast<double>(-0.25)
+                      +in[i*n+(j+2)] * static_cast<double>(0.125)
+                      +in[i*n+(j-2)] * static_cast<double>(-0.125)
+                      +in[(i+2)*n+j] * static_cast<double>(0.125)
+                      +in[(i-2)*n+j] * static_cast<double>(-0.125);
+      }
     });
   });
 }
@@ -26,9 +54,10 @@ void star3(sycl::queue & q, const size_t n, sycl::buffer<double> & d_in, sycl::b
   q.submit([&](sycl::handler& h) {
     auto in  = d_in.template get_access<sycl::access::mode::read>(h);
     auto out = d_out.template get_access<sycl::access::mode::read_write>(h);
-    h.parallel_for(sycl::range<2> {n-6,n-6}, sycl::id<2> {3,3}, [=] (sycl::item<2> it) {
-        const auto i = it[0];
-        const auto j = it[1];
+    h.parallel_for(sycl::range<2> {n,n}, [=] (sycl::id<2> it) {
+      const size_t i = it.get(0);
+      const size_t j = it.get(1);
+      if ( (3 <= i) && (i < n-3) && (3 <= j) && (j < n-3) ) {
         out[i*n+j] += +in[i*n+(j+1)] * static_cast<double>(0.166666666667)
                               +in[i*n+(j-1)] * static_cast<double>(-0.166666666667)
                               +in[(i+1)*n+j] * static_cast<double>(0.166666666667)
@@ -41,6 +70,7 @@ void star3(sycl::queue & q, const size_t n, sycl::buffer<double> & d_in, sycl::b
                               +in[i*n+(j-3)] * static_cast<double>(-0.0555555555556)
                               +in[(i+3)*n+j] * static_cast<double>(0.0555555555556)
                               +in[(i-3)*n+j] * static_cast<double>(-0.0555555555556);
+      }
     });
   });
 }
@@ -50,9 +80,10 @@ void star4(sycl::queue & q, const size_t n, sycl::buffer<double> & d_in, sycl::b
   q.submit([&](sycl::handler& h) {
     auto in  = d_in.template get_access<sycl::access::mode::read>(h);
     auto out = d_out.template get_access<sycl::access::mode::read_write>(h);
-    h.parallel_for(sycl::range<2> {n-8,n-8}, sycl::id<2> {4,4}, [=] (sycl::item<2> it) {
-        const auto i = it[0];
-        const auto j = it[1];
+    h.parallel_for(sycl::range<2> {n,n}, [=] (sycl::id<2> it) {
+      const size_t i = it.get(0);
+      const size_t j = it.get(1);
+      if ( (4 <= i) && (i < n-4) && (4 <= j) && (j < n-4) ) {
         out[i*n+j] += +in[i*n+(j+1)] * static_cast<double>(0.125)
                               +in[i*n+(j-1)] * static_cast<double>(-0.125)
                               +in[(i+1)*n+j] * static_cast<double>(0.125)
@@ -69,16 +100,94 @@ void star4(sycl::queue & q, const size_t n, sycl::buffer<double> & d_in, sycl::b
                               +in[i*n+(j-4)] * static_cast<double>(-0.03125)
                               +in[(i+4)*n+j] * static_cast<double>(0.03125)
                               +in[(i-4)*n+j] * static_cast<double>(-0.03125);
+      }
     });
   });
 }
 
-void nothing(sycl::queue & q, const size_t n, sycl::buffer<double> & d_in, sycl::buffer<double> & d_out)
+
+void star2(sycl::queue & q, const size_t n, const size_t block_size, sycl::buffer<double> & d_in, sycl::buffer<double> & d_out)
 {
-    std::cout << "You are trying to use a stencil that does not exist.\n";
-    std::cout << "Please generate the new stencil using the code generator\n";
-    std::cout << "and add it to the case-switch in the driver." << std::endl;
-    prk::Abort();
+  sycl::range<2> global{n,n};
+  sycl::range<2> local{block_size,block_size};
+  q.submit([&](sycl::handler& h) {
+    auto in  = d_in.template get_access<sycl::access::mode::read>(h);
+    auto out = d_out.template get_access<sycl::access::mode::read_write>(h);
+    h.parallel_for(sycl::nd_range{global, local}, [=](sycl::nd_item<2> it) {
+      const size_t i = it.get_global_id(0);
+      const size_t j = it.get_global_id(1);
+      if ( (2 <= i) && (i < n-2) && (2 <= j) && (j < n-2) ) {
+        out[i*n+j] += +in[i*n+(j+1)] * static_cast<double>(0.25)
+                      +in[i*n+(j-1)] * static_cast<double>(-0.25)
+                      +in[(i+1)*n+j] * static_cast<double>(0.25)
+                      +in[(i-1)*n+j] * static_cast<double>(-0.25)
+                      +in[i*n+(j+2)] * static_cast<double>(0.125)
+                      +in[i*n+(j-2)] * static_cast<double>(-0.125)
+                      +in[(i+2)*n+j] * static_cast<double>(0.125)
+                      +in[(i-2)*n+j] * static_cast<double>(-0.125);
+      }
+    });
+  });
+}
+
+void star3(sycl::queue & q, const size_t n, const size_t block_size, sycl::buffer<double> & d_in, sycl::buffer<double> & d_out)
+{
+  sycl::range<2> global{n,n};
+  sycl::range<2> local{block_size,block_size};
+  q.submit([&](sycl::handler& h) {
+    auto in  = d_in.template get_access<sycl::access::mode::read>(h);
+    auto out = d_out.template get_access<sycl::access::mode::read_write>(h);
+    h.parallel_for(sycl::nd_range{global, local}, [=](sycl::nd_item<2> it) {
+      const size_t i = it.get_global_id(0);
+      const size_t j = it.get_global_id(1);
+      if ( (3 <= i) && (i < n-3) && (3 <= j) && (j < n-3) ) {
+        out[i*n+j] += +in[i*n+(j+1)] * static_cast<double>(0.166666666667)
+                      +in[i*n+(j-1)] * static_cast<double>(-0.166666666667)
+                      +in[(i+1)*n+j] * static_cast<double>(0.166666666667)
+                      +in[(i-1)*n+j] * static_cast<double>(-0.166666666667)
+                      +in[i*n+(j+2)] * static_cast<double>(0.0833333333333)
+                      +in[i*n+(j-2)] * static_cast<double>(-0.0833333333333)
+                      +in[(i+2)*n+j] * static_cast<double>(0.0833333333333)
+                      +in[(i-2)*n+j] * static_cast<double>(-0.0833333333333)
+                      +in[i*n+(j+3)] * static_cast<double>(0.0555555555556)
+                      +in[i*n+(j-3)] * static_cast<double>(-0.0555555555556)
+                      +in[(i+3)*n+j] * static_cast<double>(0.0555555555556)
+                      +in[(i-3)*n+j] * static_cast<double>(-0.0555555555556);
+      }
+    });
+  });
+}
+
+void star4(sycl::queue & q, const size_t n, const size_t block_size, sycl::buffer<double> & d_in, sycl::buffer<double> & d_out)
+{
+  sycl::range<2> global{n,n};
+  sycl::range<2> local{block_size,block_size};
+  q.submit([&](sycl::handler& h) {
+    auto in  = d_in.template get_access<sycl::access::mode::read>(h);
+    auto out = d_out.template get_access<sycl::access::mode::read_write>(h);
+    h.parallel_for(sycl::nd_range{global, local}, [=](sycl::nd_item<2> it) {
+      const size_t i = it.get_global_id(0);
+      const size_t j = it.get_global_id(1);
+      if ( (4 <= i) && (i < n-4) && (4 <= j) && (j < n-4) ) {
+        out[i*n+j] += +in[i*n+(j+1)] * static_cast<double>(0.125)
+                      +in[i*n+(j-1)] * static_cast<double>(-0.125)
+                      +in[(i+1)*n+j] * static_cast<double>(0.125)
+                      +in[(i-1)*n+j] * static_cast<double>(-0.125)
+                      +in[i*n+(j+2)] * static_cast<double>(0.0625)
+                      +in[i*n+(j-2)] * static_cast<double>(-0.0625)
+                      +in[(i+2)*n+j] * static_cast<double>(0.0625)
+                      +in[(i-2)*n+j] * static_cast<double>(-0.0625)
+                      +in[i*n+(j+3)] * static_cast<double>(0.0416666666667)
+                      +in[i*n+(j-3)] * static_cast<double>(-0.0416666666667)
+                      +in[(i+3)*n+j] * static_cast<double>(0.0416666666667)
+                      +in[(i-3)*n+j] * static_cast<double>(-0.0416666666667)
+                      +in[i*n+(j+4)] * static_cast<double>(0.03125)
+                      +in[i*n+(j-4)] * static_cast<double>(-0.03125)
+                      +in[(i+4)*n+j] * static_cast<double>(0.03125)
+                      +in[(i-4)*n+j] * static_cast<double>(-0.03125);
+      }
+    });
+  });
 }
 
 int main(int argc, char * argv[])
@@ -114,10 +223,10 @@ int main(int argc, char * argv[])
 
       if (argc > 3) {
           block_size = std::atoi(argv[3]);
-          if (block_size <= 0) block_size = n;
+          if (block_size < 0) block_size = n;
           if (block_size > n) block_size = n;
       }
-      if (n % block_size) {
+      if (block_size && (n % block_size)) {
         throw "ERROR: block size does not evenly divide grid size";
       }
 
@@ -127,7 +236,7 @@ int main(int argc, char * argv[])
           radius = std::atoi(argv[4]);
       }
 
-      if ( (radius < 1) || (2*radius+1 > n) ) {
+      if ( (radius < 2) || (radius > 4) || (2*radius+1 > n) ) {
         throw "ERROR: Stencil radius negative or too large";
       }
   }
@@ -148,15 +257,7 @@ int main(int argc, char * argv[])
   sycl::queue q{sycl::gpu_selector{}};
   prk::SYCL::print_device_platform(q);
 
-  auto stencil = nothing;
-  switch (radius) {
-      case 2: stencil = star2; break;
-      case 3: stencil = star3; break;
-      case 4: stencil = star4; break;
-  }
-
-  size_t padded_n = block_size * prk::divceil(n,block_size);
-  sycl::range<2> global{padded_n,padded_n};
+  sycl::range<2> global{n,n};
   sycl::range<2> local{block_size,block_size};
 
   //////////////////////////////////////////////////////////////////////
@@ -190,17 +291,23 @@ int main(int argc, char * argv[])
 
       if (iter==1) stencil_time = prk::wtime();
 
-      stencil(q, n, d_in, d_out);
-      q.wait();
-
-      q.submit([&](sycl::handler& h) {
-        auto in  = d_in.template get_access<sycl::access::mode::read_write>(h);
-        h.parallel_for(sycl::nd_range{global, local}, [=](sycl::nd_item<2> it) {
-            const size_t i = it.get_global_id(0);
-            const size_t j = it.get_global_id(1);
-            in[i*n+j] += static_cast<double>(1);
-        });
-      });
+      if (block_size) {
+          switch (radius) {
+              case 2: star2(q, n, block_size, d_in, d_out); break;
+              case 3: star3(q, n, block_size, d_in, d_out); break;
+              case 4: star4(q, n, block_size, d_in, d_out); break;
+          }
+          q.wait();
+          add(q, n, block_size, d_in);
+      } else {
+          switch (radius) {
+              case 2: star2(q, n, d_in, d_out); break;
+              case 3: star3(q, n, d_in, d_out); break;
+              case 4: star4(q, n, d_in, d_out); break;
+          }
+          q.wait();
+          add(q, n, d_in);
+      }
       q.wait();
     }
     stencil_time = prk::wtime() - stencil_time;
