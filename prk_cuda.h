@@ -66,8 +66,8 @@ namespace prk
                     prk::CUDA::check( cudaSetDevice(g) );
                 }
 
-                void print() {
-                    for (int i=0; i<nDevices; ++i) {
+                void print(int n=1000) {
+                    for (int i=0; i<std::min(n,nDevices); ++i) {
                         std::cout << "device name: " << vDevices[i].name << "\n";
                         std::cout << "total global memory:     " << vDevices[i].totalGlobalMem << "\n";
                         std::cout << "max threads per block:   " << vDevices[i].maxThreadsPerBlock << "\n";

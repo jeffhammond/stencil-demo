@@ -1,5 +1,5 @@
-#include "prk_sycl.h"
 #include "prk_util.h"
+#include "prk_sycl.h"
 
 void star2(sycl::queue & q, const size_t n, sycl::buffer<double> & d_in, sycl::buffer<double> & d_out)
 {
@@ -220,14 +220,12 @@ int main(int argc, char * argv[])
   }
 
   //////////////////////////////////////////////////////////////////////
-  /// Analyze and output results
+  // Analyze and output results
   //////////////////////////////////////////////////////////////////////
 
   // interior of grid with respect to stencil
-  auto active_points = (n-2L*radius)*(n-2L*radius);
-
-  // compute L1 norm in parallel
-  double norm(0);
+  const size_t active_points = (n-2L*radius)*(n-2L*radius);
+  double norm{0};
   for (size_t i=radius; i<n-radius; i++) {
     for (size_t j=radius; j<n-radius; j++) {
       norm += prk::abs(h_out[i*n+j]);
@@ -241,6 +239,7 @@ int main(int argc, char * argv[])
   if (prk::abs(norm-reference_norm) > epsilon) {
     std::cout << "ERROR: L1 norm = " << norm
               << " Reference L1 norm = " << reference_norm << std::endl;
+    return 1;
   } else {
     std::cout << "Solution validates" << std::endl;
 #ifdef VERBOSE
@@ -257,5 +256,3 @@ int main(int argc, char * argv[])
 
   return 0;
 }
-
-

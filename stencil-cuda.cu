@@ -77,18 +77,19 @@ int main(int argc, char* argv[])
   std::cout << "Parallel Research Kernels version " << std::endl;
   std::cout << "C++11/CUDA Stencil execution on 2D grid" << std::endl;
 
-  prk::CUDA::info info;
-  //info.print();
-
   //////////////////////////////////////////////////////////////////////
   // Process and test input parameters
   //////////////////////////////////////////////////////////////////////
 
-  int iterations, n, radius, tile_size;
-  bool star = true;
+  int iterations;
+  size_t n, block_size;
+  size_t radius = 2;
+
+  block_size = 16;
+
   try {
       if (argc < 3) {
-        throw "Usage: <# iterations> <array dimension> [<tile_size> <star/grid> <radius>]";
+        throw "Usage: <# iterations> <array dimension> [<block size> <stencil radius>]";
       }
 
       // number of times to run the algorithm
@@ -105,28 +106,19 @@ int main(int argc, char* argv[])
         throw "ERROR: grid dimension too large - overflow risk";
       }
 
-      // default tile size for tiling of local transpose
-      tile_size = 32;
       if (argc > 3) {
-          tile_size = std::atoi(argv[3]);
-          if (tile_size <= 0) tile_size = n;
-          if (tile_size > n) tile_size = n;
-          if (tile_size > 32) {
-              std::cout << "Warning: tile_size > 32 may lead to incorrect results (observed for CUDA 9.0 on GV100).\n";
-          }
+          block_size = std::atoi(argv[3]);
+          if (block_size <= 0) block_size = n;
+          if (block_size > n) block_size = n;
       }
-
-      // stencil pattern
-      if (argc > 4) {
-          auto stencil = std::string(argv[4]);
-          auto grid = std::string("grid");
-          star = (stencil == grid) ? false : true;
+      if (n % block_size) {
+        throw "ERROR: block size does not evenly divide grid size";
       }
 
       // stencil radius
       radius = 2;
-      if (argc > 5) {
-          radius = std::atoi(argv[5]);
+      if (argc > 4) {
+          radius = std::atoi(argv[4]);
       }
 
       if ( (radius < 1) || (2*radius+1 > n) ) {
@@ -140,21 +132,25 @@ int main(int argc, char* argv[])
 
   std::cout << "Number of iterations = " << iterations << std::endl;
   std::cout << "Grid size            = " << n << std::endl;
-  std::cout << "Tile size            = " << tile_size << std::endl;
-  std::cout << "Type of stencil      = " << (star ? "star" : "grid") << std::endl;
+  std::cout << "Block size           = " << block_size << std::endl;
   std::cout << "Radius of stencil    = " << radius << std::endl;
 
+  //////////////////////////////////////////////////////////////////////
+  /// Setup CUDA environment
+  //////////////////////////////////////////////////////////////////////
+
+  prk::CUDA::info info;
+  info.print(1);
+
   auto stencil = nothing;
-  if (star) {
-      switch (radius) {
-          case 2: stencil = star2; break;
-          case 3: stencil = star3; break;
-          case 4: stencil = star4; break;
-      }
+  switch (radius) {
+      case 2: stencil = star2; break;
+      case 3: stencil = star3; break;
+      case 4: stencil = star4; break;
   }
 
-  dim3 dimGrid(prk::divceil(n,tile_size),prk::divceil(n,tile_size),1);
-  dim3 dimBlock(tile_size, tile_size, 1);
+  dim3 dimGrid(prk::divceil(n,block_size),prk::divceil(n,block_size),1);
+  dim3 dimBlock(block_size, block_size, 1);
   info.checkDims(dimBlock, dimGrid);
 
   //////////////////////////////////////////////////////////////////////
@@ -163,7 +159,7 @@ int main(int argc, char* argv[])
 
   double stencil_time{0};
 
-  const size_t nelems = (size_t)n * (size_t)n;
+  const size_t nelems = n*n;
   const size_t bytes = nelems * sizeof(double);
   double * h_in;
   double * h_out;
@@ -184,6 +180,7 @@ int main(int argc, char* argv[])
   prk::CUDA::check( cudaMalloc((void**)&d_out, bytes) );
   prk::CUDA::check( cudaMemcpy(d_in, &(h_in[0]), bytes, cudaMemcpyHostToDevice) );
   prk::CUDA::check( cudaMemcpy(d_out, &(h_out[0]), bytes, cudaMemcpyHostToDevice) );
+  prk::CUDA::check( cudaDeviceSynchronize() );
 
   for (int iter = 0; iter<=iterations; iter++) {
 
@@ -211,14 +208,14 @@ int main(int argc, char* argv[])
   prk::CUDA::check( cudaFree(d_in) );
 
   //////////////////////////////////////////////////////////////////////
-  // Analyze and output results.
+  // Analyze and output results
   //////////////////////////////////////////////////////////////////////
 
   // interior of grid with respect to stencil
-  size_t active_points = static_cast<size_t>(n-2*radius)*static_cast<size_t>(n-2*radius);
-  double norm = 0.0;
-  for (int i=radius; i<n-radius; i++) {
-    for (int j=radius; j<n-radius; j++) {
+  const size_t active_points = (n-2L*radius)*(n-2L*radius);
+  double norm{0};
+  for (size_t i=radius; i<n-radius; i++) {
+    for (size_t j=radius; j<n-radius; j++) {
       norm += prk::abs(h_out[i*n+j]);
     }
   }
@@ -226,7 +223,7 @@ int main(int argc, char* argv[])
 
   // verify correctness
   const double epsilon = 1.0e-8;
-  double reference_norm = 2.*(iterations+1.);
+  const double reference_norm = 2*(iterations+1);
   if (prk::abs(norm-reference_norm) > epsilon) {
     std::cout << "ERROR: L1 norm = " << norm
               << " Reference L1 norm = " << reference_norm << std::endl;
@@ -237,10 +234,11 @@ int main(int argc, char* argv[])
     std::cout << "L1 norm = " << norm
               << " Reference L1 norm = " << reference_norm << std::endl;
 #endif
-    const int stencil_size = star ? 4*radius+1 : (2*radius+1)*(2*radius+1);
-    size_t flops = (2L*(size_t)stencil_size+1L) * active_points;
-    auto avgtime = stencil_time/iterations;
-    std::cout << "Rate (MFlops/s): " << 1.0e-6 * static_cast<double>(flops)/avgtime
+    const size_t stencil_size = 4*radius+1;
+    size_t flops = (2L*stencil_size+1L) * active_points;
+    double avgtime = stencil_time/iterations;
+    std::cout << 8*sizeof(double) << "B "
+              << "Rate (MFlops/s): " << 1.0e-6 * static_cast<double>(flops)/avgtime
               << " Avg time (s): " << avgtime << std::endl;
   }
 
