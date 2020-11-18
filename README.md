@@ -2,9 +2,9 @@
 
 ## DPC++
 
-Git hash used in performance results below: d81081f70085de828d2ff8acdd3e62621af5d00c
+Git hash used in performance results below: https://github.com/intel/llvm/commit/d81081f70085de828d2ff8acdd3e62621af5d00c
 
-A more recent Git hash that works: cece649de57dbd5dc7052d6e45ca3bd47fd0913b
+A more recent Git hash that works: https://github.com/intel/llvm/commit/cece649de57dbd5dc7052d6e45ca3bd47fd0913b
 
 Run `build.sh` in this directory to obtain the DPC++ compiler for the CUDA back-end.
 
