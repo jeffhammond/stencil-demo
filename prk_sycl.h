@@ -23,9 +23,18 @@ namespace prk {
 #if ! ( defined(TRISYCL) || defined(__HIPSYCL__) )
             auto d = q.get_device();
             auto p = d.get_platform();
-            std::cout << "SYCL Device:   " << d.get_info<sycl::info::device::name>() << std::endl;
             std::cout << "SYCL Platform: " << p.get_info<sycl::info::platform::name>() << std::endl;
+            std::cout << "SYCL Device:   " << d.get_info<sycl::info::device::name>() << std::endl;
+            //std::cout << "max_work_item_dimensions:" << d.get_info<sycl::info::device::max_work_item_dimensions>() << std::endl;
+            //auto m = d.get_info<sycl::info::device::max_work_item_sizes>();
+            //std::cout << "max_work_item_sizes:" << m[0] << "," << m[1] << "," << m[2] << std::endl;
+            //std::cout << "max_work_group_size:" << d.get_info<sycl::info::device::max_work_group_size>() << std::endl;
 #endif
+        }
+
+        size_t get_max_work_items(const sycl::queue & q) {
+            auto d = q.get_device();
+            return d.get_info<sycl::info::device::max_work_group_size>();
         }
 
         bool has_fp64(const sycl::queue & q) {

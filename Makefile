@@ -8,9 +8,9 @@ CXXFLAGS  = $(DEFAULT_OPT_FLAGS) $(CPPFLAGS)
 
 SYCLFLAGS = $(SYCLFLAG)
 
-.PHONY: all clean cuda sycl
+.PHONY: all clean sycl
 
-all: stencil-cuda stencil-sycl stencil-2d-sycl stencil-sycl-usm
+all: stencil-sycl stencil-2d-sycl stencil-sycl-usm
 
 %-sycl: %-sycl.cc prk_util.h prk_sycl.h
 	$(SYCLCXX) $(CPPFLAGS) $(SYCLFLAGS) $< -o $@
