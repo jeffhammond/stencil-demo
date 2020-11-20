@@ -10,7 +10,7 @@ SYCLFLAGS = $(SYCLFLAG)
 
 .PHONY: all clean sycl
 
-all: stencil-sycl stencil-2d-sycl stencil-sycl-usm
+all: stencil-sycl stencil-2d-sycl stencil-sycl-usm stencil-cuda
 
 %-sycl: %-sycl.cc prk_util.h prk_sycl.h
 	$(SYCLCXX) $(CPPFLAGS) $(SYCLFLAGS) $< -o $@
