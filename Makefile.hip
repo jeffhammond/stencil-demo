@@ -6,11 +6,9 @@ endif
 
 SYCLFLAGS = $(SYCLFLAG)
 
-.PHONY: all hip sycl
+.PHONY: all
 
-sycl: stencil-sycl stencil-2d-sycl stencil-sycl-usm
-cuda: stencil-hip
-all: sycl hip
+all: stencil-hip stencil-sycl stencil-2d-sycl #stencil-sycl-usm
 
 %-sycl: %-sycl.cc prk_util.h prk_sycl.h
 	$(SYCLCXX) $(CPPFLAGS) $(SYCLFLAGS) $< -o $@
