@@ -33,7 +33,7 @@ namespace prk
                     prk::HIP::check( hipGetDeviceCount(&nDevices) );
                     vDevices.resize(nDevices);
                     for (int i=0; i<nDevices; ++i) {
-                        hipGetDeviceProperties(&(vDevices[i]), i);
+                        prk::HIP::check( hipGetDeviceProperties(&(vDevices[i]), i) );
                         if (i==0) {
                             maxThreadsPerBlock = vDevices[i].maxThreadsPerBlock;
                             for (int j=0; j<3; ++j) {
