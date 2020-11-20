@@ -16,6 +16,7 @@ octave-workspace                # Octave crashes
 *.error                         # ALCF Cobalt scheduler
 
 stencil-cuda
+stencil-hip
 stencil-sycl
 stencil-sycl-explicit
 stencil-sycl-explicit-usm
