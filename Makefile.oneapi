@@ -1,4 +1,4 @@
-include make.defs
+include make.defs.oneapi
 
 ifdef VERBOSE
     CPPFLAGS += -DVERBOSE
