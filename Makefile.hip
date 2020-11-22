@@ -8,14 +8,17 @@ SYCLFLAGS = $(SYCLFLAG)
 
 .PHONY: all
 
-all: stencil-hip stencil-sycl stencil-2d-sycl #stencil-sycl-usm
+all: stencil-hip stencil-sycl-hip stencil-2d-sycl-hip #stencil-sycl-usm-hip
 
-%-sycl: %-sycl.cc prk_util.h prk_sycl.h
+stencil-sycl-hip: stencil-sycl.cc prk_util.h prk_sycl.h
 	$(SYCLCXX) $(CPPFLAGS) $(SYCLFLAGS) $< -o $@
 
-%-sycl-usm: %-sycl-usm.cc prk_util.h prk_sycl.h
+stencil-2d-sycl-hip: stencil-2d-sycl.cc prk_util.h prk_sycl.h
 	$(SYCLCXX) $(CPPFLAGS) $(SYCLFLAGS) $< -o $@
 
-%-hip: %-hip.cc prk_util.h prk_hip.h
+stencil-sycl-usm-hip: stencil-sycl-usm.cc prk_util.h prk_sycl.h
+	$(SYCLCXX) $(CPPFLAGS) $(SYCLFLAGS) $< -o $@
+
+stencil-hip: stencil-hip.cc prk_util.h prk_hip.h
 	$(HIPCC) $(HIPFLAGS) $(CPPFLAGS) $< -o $@
 

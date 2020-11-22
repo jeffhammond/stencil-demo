@@ -17,4 +17,5 @@ clean:
 	-rm -f *-sycl-explicit-usm
 	-rm -f *-cuda
 	-rm -f *-hip
+	-rm -f *-oneapi
 	-rm -f *-opencl

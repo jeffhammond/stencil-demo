@@ -8,14 +8,17 @@ SYCLFLAGS = $(SYCLFLAG)
 
 .PHONY: all
 
-all: stencil-cuda stencil-sycl stencil-2d-sycl stencil-sycl-usm
+all: stencil-cuda stencil-sycl-cuda stencil-2d-sycl-cuda stencil-sycl-usm-cuda
 
-%-sycl: %-sycl.cc prk_util.h prk_sycl.h
+stencil-sycl-cuda: stencil-sycl.cc prk_util.h prk_sycl.h
 	$(SYCLCXX) $(CPPFLAGS) $(SYCLFLAGS) $< -o $@
 
-%-sycl-usm: %-sycl-usm.cc prk_util.h prk_sycl.h
+stencil-2d-sycl-cuda: stencil-2d-sycl.cc prk_util.h prk_sycl.h
 	$(SYCLCXX) $(CPPFLAGS) $(SYCLFLAGS) $< -o $@
 
-%-cuda: %-cuda.cu prk_util.h prk_cuda.h
+stencil-sycl-usm-cuda: stencil-sycl-usm.cc prk_util.h prk_sycl.h
+	$(SYCLCXX) $(CPPFLAGS) $(SYCLFLAGS) $< -o $@
+
+stencil-cuda: stencil-cuda.cu prk_util.h prk_cuda.h
 	$(NVCC) $(CUDAFLAGS) $(CPPFLAGS) $< -o $@
 
