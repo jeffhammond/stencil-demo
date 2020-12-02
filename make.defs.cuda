@@ -7,7 +7,7 @@ SYCLDIR=${HOME}/DPCPP/build
 SYCLCXX=${SYCLDIR}/bin/clang++
 SYCLFLAG=${CXXFLAGS}
 SYCLFLAG+=-fsycl -fsycl-unnamed-lambda -DDPCPP
-#SYCLFLAG+=-L${SYCLDIR}/lib -lsycl -Wl,-rpath=${SYCLDIR}/lib
+SYCLFLAG+=-L${SYCLDIR}/lib -lsycl -Wl,-rpath=${SYCLDIR}/lib
 SYCLFLAG+=-fsycl-targets=nvptx64-nvidia-cuda-sycldevice -DDPCPP_CUDA
 SYCLFLAG+=-Wno-unknown-cuda-version
 #
