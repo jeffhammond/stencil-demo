@@ -93,7 +93,7 @@ int main(int argc, char * argv[])
   std::cout << "Parallel Research Kernels version " << std::endl;
   std::cout << "C++11/SYCL Stencil execution on 2D grid" << std::endl;
 
-  sycl::queue q(sycl::gpu_selector{}, sycl::property::queue::in_order{});
+  sycl::queue q(sycl::gpu_selector_v, sycl::property::queue::in_order{});
   prk::SYCL::print_device_platform(q);
 
   //////////////////////////////////////////////////////////////////////
