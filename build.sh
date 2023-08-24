@@ -1,10 +1,12 @@
 #!/bin/bash
 
+MYDIR=/local/${USER}
+
 set +xe
 
-cd $HOME
-if [ -d ${HOME}/DPCPP/.git ] ; then
-    cd ${HOME}/DPCPP
+cd $MYDIR
+if [ -d ${MYDIR}/DPCPP/.git ] ; then
+    cd ${MYDIR}/DPCPP
     git fetch --all
     git checkout sycl
     git pull
@@ -12,7 +14,7 @@ if [ -d ${HOME}/DPCPP/.git ] ; then
 else
     git clone https://github.com/intel/llvm.git DPCPP
 fi
-cd ${HOME}/DPCPP
-python ./buildbot/configure.py --cuda
-python ./buildbot/compile.py
-#python ./buildbot/check.py
+cd ${MYDIR}/DPCPP
+python3 ./buildbot/configure.py --cuda
+python3 ./buildbot/compile.py
+#python3 ./buildbot/check.py

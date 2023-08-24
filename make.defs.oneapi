@@ -2,6 +2,6 @@ CXXFLAGS=-g -O3 -std=c++17
 #
 # Intel DPC++
 #
-SYCLCXX=dpcpp
+SYCLCXX=clang++
 SYCLFLAG=${CXXFLAGS}
 SYCLFLAG+=-fsycl -fsycl-unnamed-lambda -DDPCPP

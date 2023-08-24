@@ -3,7 +3,9 @@
 
 #include "CL/sycl.hpp"
 
+#ifndef DPCPP
 namespace sycl = cl::sycl;
+#endif
 
 namespace prk {
 
