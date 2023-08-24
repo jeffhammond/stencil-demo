@@ -33,5 +33,5 @@ SYCLFLAG+=-Wno-unknown-cuda-version
 #
 NVCC=nvcc
 CUDAFLAGS=${CXXFLAGS}
-CUDAFLAGS+=--gpu-architecture=sm_70
+CUDAFLAGS+=--gpu-architecture=sm_80
 CUDAFLAGS+=-D_X86INTRIN_H_INCLUDED
